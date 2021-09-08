@@ -18,7 +18,7 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
     Results(0) = 1; 
     Results(1) = 2;
     Results(2) = 3;
-    Results(3) = ground_truth[0];
+    Results(3) = 4;
     
     return Results; 
 }
