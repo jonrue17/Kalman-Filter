@@ -29,11 +29,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
    * TODO:
    * Calculate a Jacobian here.
    */
-    VectorXd Results(4);
-    Results(0) = 1;
-    Results(1) = 2;
-    Results(2) = 3;
-    Results(3) = 10;
+    MatrixXd Results(4,4);
 
     return Results;
 }
