@@ -72,10 +72,10 @@ void KalmanFilter::UpdateEKF(const VectorXd &z, const VectorXd& x_state) {
     y = z - h_x;
 
     while (y(1) > 3.1415) {
-        y(1) = y(1) - 3.1415; 
+        y(1) = y(1) - 2*3.1415; 
     }
     while (y(1) < -3.1415) {
-        y(1) = y(1) + 3.1415;
+        y(1) = y(1) + 2*3.1415;
     }
     std::cout << "Phi = " << y(1) << std::endl; 
 
