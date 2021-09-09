@@ -57,7 +57,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      */
 
     // first measurement
-    cout << "EKF: " << endl;
+    cout << "EKF: Initialisation" << endl;
     ekf_.x_ = VectorXd(4);
     ekf_.x_ << 0, 0, 0, 0;
 
@@ -102,6 +102,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     // done initializing, no need to predict or update
     is_initialized_ = true;
+    cout << "EKF: Initialisation done" << endl;
     return;
   }
 
@@ -131,7 +132,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   ekf_.Q_(2, 0) = pow(dt, 3) / 2 * pow(noise_ax, 2);
   ekf_.Q_(2, 2) = pow(dt, 2) * pow(noise_ax, 2);
   ekf_.Q_(3, 1) = pow(dt, 3) / 2 * pow(noise_ay, 2);
-  ekf_.Q_(0, 0) = pow(dt, 2) * pow(noise_ay, 2);
+  ekf_.Q_(3, 3) = pow(dt, 2) * pow(noise_ay, 2);
 
   ekf_.P_ = ekf_.F_* ekf_.P_*(ekf_.F_.transpose())+ekf_.Q_;
   
