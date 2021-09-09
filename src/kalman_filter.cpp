@@ -1,4 +1,5 @@
 #include "kalman_filter.h"
+#include <iostream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -33,13 +34,18 @@ void KalmanFilter::Update(const VectorXd &z) {
   /**
    * Update the state by using Kalman Filter equations
    */
-    VectorXd y; 
+    VectorXd y(2); 
     y = z - H_ * x_; 
+    std::cout << "Calculation of y : ok" << std::endl;
     MatrixXd S_ = H_ * P_ * (H_.transpose()) + R_;
+    std::cout << "Calculation of S : ok" << std::endl;
     // Calculate the optimal kalman gain 
-    MatrixXd Kopt_=P_*H_*(S_.inverse()); 
+    MatrixXd Kopt_=P_* (H_.transpose()) *(S_.inverse());
+    std::cout << "Calculation of Kopt : ok" << std::endl;
     x_ = x_ + Kopt_ * y; 
+    std::cout << "Calculation of New State : ok" << std::endl;
     P_ = P_ - Kopt_ * H_ * P_;
+    std::cout << "Calculation of P : ok" << std::endl;
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z, const VectorXd& x_state) {
@@ -64,10 +70,11 @@ void KalmanFilter::UpdateEKF(const VectorXd &z, const VectorXd& x_state) {
             (px * vx + py * vy) / sqrt(px * px + py * py);
     }
 
-    VectorXd y = z - h_x; ;
+    VectorXd y(3);
+    y = z - h_x; ;
     MatrixXd S_ = H_ * P_ * (H_.transpose()) + R_;
     // Calculate the optimal kalman gain 
-    MatrixXd Kopt_ = P_ * H_ * (S_.inverse());
+    MatrixXd Kopt_ = P_ * (H_.transpose()) * (S_.inverse());
     x_ = x_ + Kopt_ * y;
     P_ = P_ - Kopt_ * H_ * P_;
 }
