@@ -159,6 +159,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       Hj_ = tools.CalculateJacobian(ekf_.x_);
       ekf_.H_ = MatrixXd(3, 4);
       ekf_.H_ = Hj_; 
+      ekf_.R_ = MatrixXd(3, 3);
+      ekf_.R_ = R_radar_; 
       ekf_.UpdateEKF(measurement_pack.raw_measurements_,ekf_.x_);
 
   } else {
@@ -166,6 +168,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       cout << "EKF: Update Laser " << endl;
       ekf_.H_ = MatrixXd(2, 4);
       ekf_.H_ = H_laser_; 
+      ekf_.R_ = MatrixXd(2, 2);
+      ekf_.R_ = R_laser_; 
       ekf_.Update(measurement_pack.raw_measurements_); 
   }
   cout << "EKF: Update Done " << endl;
