@@ -54,18 +54,15 @@ void KalmanFilter::UpdateEKF(const VectorXd &z, const VectorXd& x_state) {
 
     VectorXd h_x(3); 
     // check division by zero
-    if (fabs(px * px + py * py) < 0.0001 && abs(px) > 0.001) {
+    if (fabs(px * px + py * py) < 0.0001) {
         h_x << sqrt(px * px + py * py),
-            atan(py / px),
+            std::atan2(py,px), 
             0;
     }
-    else if (abs(px) > 0.001){
-        h_x << sqrt(px * px + py * py),
-            atan(py / px),
-            (px * vx + py * vy) / sqrt(px * px + py * py);
-    }
     else {
-        h_x = H_ * x_state; 
+        h_x << sqrt(px * px + py * py),
+            std::atan2(py, px),
+            (px * vx + py * vy) / sqrt(px * px + py * py);
     }
 
     VectorXd y(3);
