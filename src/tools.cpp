@@ -33,7 +33,8 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
     Results(0) = 1;
     Results(1) = 2;
     Results(2) = 3;
-    Results(3) = 4;
+    Results(3) = 10;
 
     return Results;
 }
+            
