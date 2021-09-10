@@ -12,6 +12,7 @@ using std::vector;
 
 // for convenience
 using json = nlohmann::json;
+int radar_laser_both;
 
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
@@ -39,7 +40,15 @@ int main() {
   Tools tools;
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
+  std::cout << "Which sensors do you want to use ? Enter a value: (1->Both 2-> Radar 3-> Laser): " << std::endl;
+  std::cin >> radar_laser_both;
+  std::cout << "Value entered:" << radar_laser_both << std::endl;
 
+  while (radar_laser_both != 1 && radar_laser_both != 2 && radar_laser_both != 3) {
+      std::cout << "False input ! Enter a value: (1->Both 2-> Radar 3-> Laser) " << std::endl;
+      std::cin >> radar_laser_both;
+      std::cout << "Value entered:" << radar_laser_both << std::endl;
+  }
 
   h.onMessage([&fusionEKF,&tools,&estimations,&ground_truth]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
@@ -47,16 +56,7 @@ int main() {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
-    int radar_laser_both;
-    std::cout << "Which sensors do you want to use ? Enter a value: (1->Both 2-> Radar 3-> Laser): " << std::endl;
-    std::cin >> radar_laser_both;
-    std::cout << "Value entered:" << radar_laser_both << std::endl;
-
-    while (radar_laser_both != 1 && radar_laser_both != 2 && radar_laser_both != 3) {
-        std::cout << "False input ! Enter a value: (1->Both 2-> Radar 3-> Laser) " << std::endl;
-        std::cin >> radar_laser_both;
-        std::cout << "Value entered:" << radar_laser_both << std::endl;
-    }
+   
 
     if (length && length > 2 && data[0] == '4' && data[1] == '2') {
       auto s = hasData(string(data));
