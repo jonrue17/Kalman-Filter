@@ -40,12 +40,24 @@ int main() {
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
 
+
   h.onMessage([&fusionEKF,&tools,&estimations,&ground_truth]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
+    int radar_laser_both;
+    std::cout << "Which sensors do you want to use ? Enter a value: (1->Both 2-> Radar 3-> Laser): " << std::endl;
+    std::cin >> radar_laser_both;
+    std::cout << "Value entered:" << radar_laser_both << std::endl;
+
+    while (radar_laser_both != 1 && radar_laser_both != 2 && radar_laser_both != 3) {
+        std::cout << "False input ! Enter a value: (1->Both 2-> Radar 3-> Laser) " << std::endl;
+        std::cin >> radar_laser_both;
+        std::cout << "Value entered:" << radar_laser_both << std::endl;
+    }
+
     if (length && length > 2 && data[0] == '4' && data[1] == '2') {
       auto s = hasData(string(data));
 
@@ -62,17 +74,7 @@ int main() {
             std::istringstream iss(sensor_measurement);
 
             long long timestamp;
-            int radar_laser_both;
-
-            std::cout << "Which sensors ? Enter a value: (1->Both 2-> Radar 3-> Laser): " << std::endl;
-            std::cin >> radar_laser_both;
-            std::cout << "Value entered:" << radar_laser_both << std::endl;
-
-            while (radar_laser_both!=1 && radar_laser_both!=2 && radar_laser_both!=3) {
-                std::cout << "False input ! Enter a value: (1->Both 2-> Radar 3-> Laser) " << std::endl;
-                std::cin >> radar_laser_both;
-                std::cout << "Value entered:" << radar_laser_both << std::endl;
-            }
+           
 
             // reads first element from the current line
             string sensor_type;
@@ -157,8 +159,8 @@ int main() {
               msgJson["rmse_vy"] = RMSE(3);
               auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
               // std::cout << msg << std::endl;
+              }
               ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-          }
         }  // end "telemetry" if
 
       } else {
