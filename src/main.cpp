@@ -55,21 +55,25 @@ int main() {
         string event = j[0].get<string>();
         
         if (event == "telemetry") {
-          // j[1] is the data JSON object
-          string sensor_measurement = j[1]["sensor_measurement"];
-          
-          MeasurementPackage meas_package;
-          std::istringstream iss(sensor_measurement);
-          
-          long long timestamp;
-          int radar_laser_both; 
+            // j[1] is the data JSON object
+            string sensor_measurement = j[1]["sensor_measurement"];
 
-          std::cout << "Which sensors ? (1->Both 2-> Radar 3-> Laser) " << radar_laser_both;
-          std::cin >> radar_laser_both; 
+            MeasurementPackage meas_package;
+            std::istringstream iss(sensor_measurement);
 
-          // reads first element from the current line
-          string sensor_type;
-          iss >> sensor_type;
+            long long timestamp;
+            int radar_laser_both;
+
+            std::cout << "Which sensors ? (1->Both 2-> Radar 3-> Laser) " << std::endl;
+            std::cin >> radar_laser_both;
+
+            if (radar_laser_both!=1 && radar_laser_both!=2 && radar_laser_both!=3) {
+                std::cout << "False input :  (1->Both 2-> Radar 3-> Laser) " << std::endl;
+                std::cin >> radar_laser_both;
+            }
+            // reads first element from the current line
+            string sensor_type;
+            iss >> sensor_type;
 
           if (sensor_type.compare("L") == 0) {
             meas_package.sensor_type_ = MeasurementPackage::LASER;
