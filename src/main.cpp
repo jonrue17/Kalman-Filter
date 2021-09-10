@@ -62,6 +62,10 @@ int main() {
           std::istringstream iss(sensor_measurement);
           
           long long timestamp;
+          int radar_laser_both; 
+
+          std::cout << "Which sensors ? (1->Both 2-> Radar 3-> Laser) " << radar_laser_both;
+          std::cin >> radar_laser_both; 
 
           // reads first element from the current line
           string sensor_type;
@@ -76,7 +80,9 @@ int main() {
             iss >> py;
             meas_package.raw_measurements_ << px, py;
             iss >> timestamp;
-            meas_package.timestamp_ = timestamp;
+            if (radar_laser_both == 1 && radar_laser_both==3) {
+                meas_package.timestamp_ = timestamp;
+            }
           } else if (sensor_type.compare("R") == 0) {
             meas_package.sensor_type_ = MeasurementPackage::RADAR;
             meas_package.raw_measurements_ = VectorXd(3);
@@ -88,7 +94,9 @@ int main() {
             iss >> ro_dot;
             meas_package.raw_measurements_ << ro,theta, ro_dot;
             iss >> timestamp;
-            meas_package.timestamp_ = timestamp;
+            if (radar_laser_both == 1 && radar_laser_both == 2) {
+                meas_package.timestamp_ = timestamp;
+            }
           }
 
           float x_gt;
@@ -100,46 +108,50 @@ int main() {
           iss >> vx_gt;
           iss >> vy_gt;
 
-          VectorXd gt_values(4);
-          gt_values(0) = x_gt;
-          gt_values(1) = y_gt; 
-          gt_values(2) = vx_gt;
-          gt_values(3) = vy_gt;
-          ground_truth.push_back(gt_values);
+          
           
           // Call ProcessMeasurement(meas_package) for Kalman filter
-          fusionEKF.ProcessMeasurement(meas_package);       
+          if ((sensor_type.compare("R") == 0 && radar_laser_both == 1 && radar_laser_both == 2) || (sensor_type.compare("L") == 0 && radar_laser_both == 1 && radar_laser_both == 3)) {
+              
+              VectorXd gt_values(4);
+              gt_values(0) = x_gt;
+              gt_values(1) = y_gt;
+              gt_values(2) = vx_gt;
+              gt_values(3) = vy_gt;
+              ground_truth.push_back(gt_values);
 
-          // Push the current estimated x,y positon from the Kalman filter's 
-          //   state vector
+              fusionEKF.ProcessMeasurement(meas_package);
 
-          VectorXd estimate(4);
+              // Push the current estimated x,y positon from the Kalman filter's 
+              //   state vector
 
-          double p_x = fusionEKF.ekf_.x_(0);
-          double p_y = fusionEKF.ekf_.x_(1);
-          double v1  = fusionEKF.ekf_.x_(2);
-          double v2 = fusionEKF.ekf_.x_(3);
+              VectorXd estimate(4);
 
-          estimate(0) = p_x;
-          estimate(1) = p_y;
-          estimate(2) = v1;
-          estimate(3) = v2;
-        
-          estimations.push_back(estimate);
+              double p_x = fusionEKF.ekf_.x_(0);
+              double p_y = fusionEKF.ekf_.x_(1);
+              double v1 = fusionEKF.ekf_.x_(2);
+              double v2 = fusionEKF.ekf_.x_(3);
 
-          VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
+              estimate(0) = p_x;
+              estimate(1) = p_y;
+              estimate(2) = v1;
+              estimate(3) = v2;
 
-          json msgJson;
-          msgJson["estimate_x"] = p_x;
-          msgJson["estimate_y"] = p_y;
-          msgJson["rmse_x"] =  RMSE(0);
-          msgJson["rmse_y"] =  RMSE(1);
-          msgJson["rmse_vx"] = RMSE(2);
-          msgJson["rmse_vy"] = RMSE(3);
-          auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
-          // std::cout << msg << std::endl;
-          ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+              estimations.push_back(estimate);
 
+              VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
+
+              json msgJson;
+              msgJson["estimate_x"] = p_x;
+              msgJson["estimate_y"] = p_y;
+              msgJson["rmse_x"] = RMSE(0);
+              msgJson["rmse_y"] = RMSE(1);
+              msgJson["rmse_vx"] = RMSE(2);
+              msgJson["rmse_vy"] = RMSE(3);
+              auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
+              // std::cout << msg << std::endl;
+              ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+          }
         }  // end "telemetry" if
 
       } else {
