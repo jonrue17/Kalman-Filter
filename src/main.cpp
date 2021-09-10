@@ -64,13 +64,16 @@ int main() {
             long long timestamp;
             int radar_laser_both;
 
-            std::cout << "Which sensors ? (1->Both 2-> Radar 3-> Laser) " << std::endl;
+            std::cout << "Which sensors ? Enter a value: (1->Both 2-> Radar 3-> Laser): " << std::endl;
             std::cin >> radar_laser_both;
+            std::cout << "Value entered:" << radar_laser_both << std::endl;
 
-            if (radar_laser_both!=1 && radar_laser_both!=2 && radar_laser_both!=3) {
-                std::cout << "False input :  (1->Both 2-> Radar 3-> Laser) " << std::endl;
+            while (radar_laser_both!=1 && radar_laser_both!=2 && radar_laser_both!=3) {
+                std::cout << "False input ! Enter a value: (1->Both 2-> Radar 3-> Laser) " << std::endl;
                 std::cin >> radar_laser_both;
+                std::cout << "Value entered:" << radar_laser_both << std::endl;
             }
+
             // reads first element from the current line
             string sensor_type;
             iss >> sensor_type;
