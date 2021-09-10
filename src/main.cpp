@@ -87,7 +87,7 @@ int main() {
             iss >> py;
             meas_package.raw_measurements_ << px, py;
             iss >> timestamp;
-            if (radar_laser_both == 1 && radar_laser_both==3) {
+            if (radar_laser_both == 1 || radar_laser_both==3) {
                 meas_package.timestamp_ = timestamp;
             }
           } else if (sensor_type.compare("R") == 0) {
@@ -101,7 +101,7 @@ int main() {
             iss >> ro_dot;
             meas_package.raw_measurements_ << ro,theta, ro_dot;
             iss >> timestamp;
-            if (radar_laser_both == 1 && radar_laser_both == 2) {
+            if (radar_laser_both == 1 || radar_laser_both == 2) {
                 meas_package.timestamp_ = timestamp;
             }
           }
@@ -118,7 +118,7 @@ int main() {
           
           
           // Call ProcessMeasurement(meas_package) for Kalman filter
-          if ((sensor_type.compare("R") == 0 && radar_laser_both == 1 && radar_laser_both == 2) || (sensor_type.compare("L") == 0 && radar_laser_both == 1 && radar_laser_both == 3)) {
+          if ((sensor_type.compare("R") == 0 && (radar_laser_both == 1 || radar_laser_both == 2)) || (sensor_type.compare("L") == 0 && (radar_laser_both == 1 || radar_laser_both == 3))) {
               
               VectorXd gt_values(4);
               gt_values(0) = x_gt;
