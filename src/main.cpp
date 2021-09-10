@@ -13,6 +13,7 @@ using std::vector;
 // for convenience
 using json = nlohmann::json;
 int radar_laser_both;
+bool keep_default_noise;
 
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
@@ -40,14 +41,26 @@ int main() {
   Tools tools;
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
-  std::cout << "Which sensors do you want to use ? Enter a value: (1->Both 2-> Radar 3-> Laser): " << std::endl;
+  
+  
+  // Choice of sensors for the Kalman Filter 
+  std::cout << "Which sensors do you want to use ? Enter a value: (1-> Both 2-> Radar 3-> Laser): " << std::endl;
   std::cin >> radar_laser_both;
-  std::cout << "Value entered:" << radar_laser_both << std::endl;
 
+  // If the user input is not as expected
   while (radar_laser_both != 1 && radar_laser_both != 2 && radar_laser_both != 3) {
       std::cout << "False input ! Enter a value: (1->Both 2-> Radar 3-> Laser) " << std::endl;
       std::cin >> radar_laser_both;
-      std::cout << "Value entered:" << radar_laser_both << std::endl;
+  }
+
+  std::cout << "Keep default process noise ? (0-> No 1->Yes): " << std::endl;
+  std::cin >> keep_default_noise;
+  if (keep_default_noise==0) {
+    std::cout << "Enter the process noise: " << std::endl;
+    std::cin >> fusionEKF.process_noise_default; 
+  }
+  else { // keep the provided value 
+      fusionEKF.process_noise_default = 9.0; 
   }
 
   h.onMessage([&fusionEKF,&tools,&estimations,&ground_truth]
@@ -161,7 +174,7 @@ int main() {
               // std::cout << msg << std::endl;
               ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
               }
-          else {
+          else { // not using this sensor, skipping to the next measurement 
               string msg = "42[\"manual\",{}]";
               ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
            }
